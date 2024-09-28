@@ -1,0 +1,14 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=PhpStorm
+###
+
+GET http://127.0.0.1:80/encode-url?url=https://vk.com
+
+###
+
+GET http://127.0.0.1:80/decode-url?hash=20240928220431
+
+###
+
+GET http://127.0.0.1:80/redirect-url?hash=20240928220431
