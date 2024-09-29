@@ -32,11 +32,17 @@ class Url
      */
     private $createdDate;
 
+    /**
+     * @ORM\Column(name="is_sent", type="boolean")
+     */
+    private $isSent;
+
     public function __construct()
     {
         $date = new \DateTimeImmutable();
         $this->setCreatedDate($date);
         $this->setHash($date->format('YmdHis'));
+        $this->setIsSent(false);
     }
 
     public function getId(): ?int
@@ -79,4 +85,17 @@ class Url
 
         return $this;
     }
+
+    public function getIsSent(): bool
+    {
+        return $this->isSent;
+    }
+
+    public function setIsSent(bool $isSent): Url
+    {
+        $this->isSent = $isSent;
+
+        return $this;
+    }
+
 }

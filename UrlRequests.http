@@ -12,3 +12,4 @@ GET http://127.0.0.1:80/decode-url?hash=20240928220431
 ###
 
 GET http://127.0.0.1:80/redirect-url?hash=20240928220431
+
