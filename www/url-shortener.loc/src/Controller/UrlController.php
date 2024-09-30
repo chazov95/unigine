@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UrlController extends AbstractController
 {
@@ -20,8 +22,26 @@ class UrlController extends AbstractController
     /**
      * @Route("/encode-url", name="encode_url")
      */
-    public function encodeUrl(Request $request): JsonResponse
+    public function encodeUrl(Request $request, ValidatorInterface $validator): JsonResponse
     {
+        $urlInput = $request->get('url');
+
+        if (!$urlInput) {
+            return $this->json(['error' => 'URL is required'], 400);
+        }
+
+        $constraint = new Assert\Url();
+
+        $violations = $validator->validate($urlInput, $constraint);
+
+        if (count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $errors[] = $violation->getMessage();
+            }
+            return $this->json(['errors' => $errors], 400);
+        }
+
         $newUrl = new Url();
         $newUrl->setUrl($request->get('url'));
 
