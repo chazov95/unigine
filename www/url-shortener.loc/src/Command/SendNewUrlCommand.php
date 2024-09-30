@@ -31,7 +31,7 @@ class SendNewUrlCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $newUrls = $this->entityManager->getRepository(Url::class)->findBy(
-                ['isSent' => true]
+                ['isSent' => false]
             );
 
         if (empty($newUrls)) {

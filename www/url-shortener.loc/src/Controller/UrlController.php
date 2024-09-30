@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Url;
 use App\Repository\UrlRepository;
-use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,8 +14,7 @@ class UrlController extends AbstractController
 {
     public function __construct(
         private readonly string $urlLifeTime
-    )
-    {
+    ) {
     }
 
     /**
@@ -45,15 +43,8 @@ class UrlController extends AbstractController
      */
     public function decodeUrl(Request $request): JsonResponse
     {
-        /** @var UrlRepository $urlRepository */
-        $urlRepository = $this->getDoctrine()->getRepository(Url::class);
-        $url = $urlRepository->findOneByHash($request->get('hash'));
+        $url = $this->getUrlsByHash($request->get('hash'));
 
-        if (empty ($url)) {
-            return $this->json([
-                'error' => 'Non-existent hash.'
-            ]);
-        }
         if ($this->checkUrlLifeTime($url)) {
             throw new \Exception('Url has expired.');
         }
@@ -70,18 +61,11 @@ class UrlController extends AbstractController
      */
     public function redirectUrl(Request $request): RedirectResponse|JsonResponse
     {
-        /** @var UrlRepository $urlRepository */
-        $urlRepository = $this->getDoctrine()->getRepository(Url::class);
-        $url = $urlRepository->findOneByHash($request->get('hash'));
-        if (empty ($url)) {
-            return $this->json([
-                'error' => 'Non-existent hash.'
-            ]);
-        }
+        $url = $this->getUrlsByHash($request->get('hash'));
+
         return $this->redirect($url->getUrl());
     }
 
-    //TODO перенести в UrlService
     /**
      * @param Url $url
      * @return bool
@@ -92,5 +76,19 @@ class UrlController extends AbstractController
     {
         return $url->getCreatedDate()->modify("+ $this->urlLifeTime") < new \DateTime();
 
+    }
+
+    private function getUrlsByHash(string $hash): JsonResponse|Url
+    {
+        /** @var UrlRepository $urlRepository */
+        $urlRepository = $this->getDoctrine()->getRepository(Url::class);
+        $url = $urlRepository->findOneByHash($hash);
+
+        if (empty ($url)) {
+            return $this->json([
+                'error' => 'Non-existent hash.'
+            ]);
+        }
+        return $url;
     }
 }
