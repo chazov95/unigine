@@ -20,7 +20,7 @@ class UrlController extends AbstractController
     }
 
     /**
-     * @Route("/encode-url", name="encode_url")
+     * @Route("/encode-url", name="encode_url", methods={"POST"})
      */
     public function encodeUrl(Request $request, ValidatorInterface $validator): JsonResponse
     {
